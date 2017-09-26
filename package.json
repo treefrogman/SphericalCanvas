@@ -19,8 +19,6 @@
   "dependencies": {
     "acorn": "^5.1.2",
     "paper": "^0.11.4",
-    "three": "^0.87.1",
-    "three-canvas-renderer": "^2.0.0",
-    "three.meshline": "^1.0.3"
+    "three": "^0.87.1"
   }
 }
