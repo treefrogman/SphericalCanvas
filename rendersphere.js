@@ -8,6 +8,9 @@ var THREE = require('three'),
 	scene = new THREE.Scene(),
 	camera = new THREE.PerspectiveCamera(viewAngle, 1, 1, 200),
 	unprojectionMatrix = SPHEREHELPER.getUnprojectionMatrix(camera),
+	unprojectionMatrixArray,
+	bezierworker = new Worker('bezierworker.js'),
+	loader = new THREE.JSONLoader(),
 	renderer = new THREE.WebGLRenderer({ antialias: true }),
 	cursor = new SPHERECURSOR.SphereCursor(camera, lineThickness, sphereRadius);
 
@@ -21,6 +24,13 @@ cursor.onUpdate(function () {
 	requestAnimationFrame(animate);
 });
 scene.add(cursor.item);
+
+bezierworker.addEventListener('message', function (e) {
+	if (e.data.cmd === 'meshReady') {
+		addTubeMesh(tubeGeometryFromArrayBuffer(e.data.mesh));
+	}
+}, false);
+bezierworker.postMessage({'cmd': 'init', 'lineThickness': lineThickness, 'sphereRadius': sphereRadius, 'screenDimensions': [window.innerWidth, window.innerHeight]});
 
 function onWindowResize(){
     camera.aspect = window.innerWidth / window.innerHeight;
@@ -36,6 +46,8 @@ document.body.appendChild(renderer.domElement);
 function updateView() {
 	cursor.update();
 	unprojectionMatrix = SPHEREHELPER.getUnprojectionMatrix(camera);
+	unprojectionMatrixArray = unprojectionMatrix.toArray();
+	bezierworker.postMessage({'cmd': 'updateView', 'matrix': unprojectionMatrixArray, 'screenDimensions': [window.innerWidth, window.innerHeight]});
 }
 
 PANANDZOOMUI.registerCamera(camera);
@@ -57,31 +69,19 @@ window.addEventListener('contextmenu', function () {
 var tubematerial = new THREE.MeshBasicMaterial({ color: 0x000000 });
 
 function addPathFromScreen(path) {
-	var i = 0,
-		ilimit = path.length,
-		n = 0,
-		nlimit = 8,
-		point,
-		points,
-		curve,
-		curvePath = new THREE.CurvePath(),
-		tubegeometry,
-		curveObject,
-		linegeometry,
-		resolution = new THREE.Vector2( window.innerWidth, window.innerHeight );
-	for (; i < ilimit; i += 1) {
-		points = [];
-		for (n = 0; n < nlimit; n += 2) {
-			point = SPHEREHELPER.normalizeAndCenterPoint([path[i][n], path[i][n + 1]]);
-			point = SPHEREHELPER.projectPointOntoSphere(point, sphereRadius, unprojectionMatrix);
-			points.push(point);
-		}
-		curve = new THREE.CubicBezierCurve3(points[0], points[1], points[2], points[3]);
-		curvePath.add(curve);
-	}
-	tubegeometry = new THREE.TubeGeometry(curvePath, 100, lineThickness, 16, false);
-	curveObject = new THREE.Mesh(tubegeometry, tubematerial);
-	scene.add(curveObject);
+	bezierworker.postMessage({'cmd': 'projectPath', 'path': path});
+}
+
+function tubeGeometryFromArrayBuffer( arrayBuffer ) {
+	var position = new THREE.BufferAttribute( arrayBuffer, 3 ),
+		geometry = new THREE.BufferGeometry();
+	geometry.addAttribute( 'position', position );
+	return geometry;
+}
+
+function addTubeMesh(tubegeometry) {
+	tubeMeshObject = new THREE.Mesh(tubegeometry, tubematerial);
+	scene.add(tubeMeshObject);
 	cursor.update();
 }
 

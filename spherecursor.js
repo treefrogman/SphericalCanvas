@@ -24,7 +24,7 @@ function SphereCursor(camera, lineThickness, sphereRadius) {
 			hidden = false;
 			cursor.layers.enable(0);
 		}
-		moveTo(SPHEREHELPER.normalizeAndCenterPoint([event.clientX, event.clientY]));
+		moveTo(SPHEREHELPER.normalizeAndCenterPoint([event.clientX, event.clientY], [window.innerWidth, window.innerHeight]));
 	}, false);
 	
 	document.body.addEventListener('pointerleave', function() {

@@ -1,7 +1,7 @@
 var THREE = require('three');
 
-function normalizeAndCenterPoint(point) {
-	return [(point[0] / window.innerWidth) * 2 - 1, 1 - (point[1] / window.innerHeight) * 2];
+function normalizeAndCenterPoint(point, screenDimensions) {
+	return [(point[0] / screenDimensions[0]) * 2 - 1, 1 - (point[1] / screenDimensions[1]) * 2];
 }
 
 function getUnprojectionMatrix(camera) {
