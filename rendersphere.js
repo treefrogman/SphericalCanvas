@@ -1,5 +1,4 @@
 var THREE = require('three'),
-	MESHLINE = require('three.meshline'),
 	SPHERECURSOR = require('./spherecursor'),
 	SPHEREHELPER = require('./spherehelper'),
 	PANANDZOOMUI = require('./panandzoomui'),
@@ -8,6 +7,7 @@ var THREE = require('three'),
 	sphereRadius = 100,
 	scene = new THREE.Scene(),
 	camera = new THREE.PerspectiveCamera(viewAngle, 1, 1, 200),
+	unprojectionMatrix = SPHEREHELPER.getUnprojectionMatrix(camera),
 	renderer = new THREE.WebGLRenderer({ antialias: true }),
 	cursor = new SPHERECURSOR.SphereCursor(camera, lineThickness, sphereRadius);
 
@@ -17,25 +17,29 @@ var THREE = require('three'),
 
 scene.background = new THREE.Color(0xffffff);
 
+cursor.onUpdate(function () {
+	requestAnimationFrame(animate);
+});
+scene.add(cursor.item);
+
 function onWindowResize(){
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
     renderer.setSize(window.innerWidth, window.innerHeight);
+    updateView();
 }
 window.addEventListener('resize', onWindowResize, false);
 onWindowResize();
 
 document.body.appendChild(renderer.domElement);
 
-PANANDZOOMUI.registerCamera(camera);
-PANANDZOOMUI.onViewChange(function () {
+function updateView() {
 	cursor.update();
-});
+	unprojectionMatrix = SPHEREHELPER.getUnprojectionMatrix(camera);
+}
 
-cursor.onUpdate(function () {
-	requestAnimationFrame(animate);
-});
-scene.add(cursor.item);
+PANANDZOOMUI.registerCamera(camera);
+PANANDZOOMUI.onViewChange(updateView);
 
 window.addEventListener('pointerdown', function () {
 	TEXTPRINTING.output("button: " + event.buttons, 0); // 1: pen, 32: eraser
@@ -64,13 +68,12 @@ function addPathFromScreen(path) {
 		tubegeometry,
 		curveObject,
 		linegeometry,
-		meshlinegeometry = new MESHLINE.MeshLine(),
 		resolution = new THREE.Vector2( window.innerWidth, window.innerHeight );
 	for (; i < ilimit; i += 1) {
 		points = [];
 		for (n = 0; n < nlimit; n += 2) {
 			point = SPHEREHELPER.normalizeAndCenterPoint([path[i][n], path[i][n + 1]]);
-			point = SPHEREHELPER.projectPointOntoSphere(point, sphereRadius, SPHEREHELPER.getUnprojectionMatrix(camera));
+			point = SPHEREHELPER.projectPointOntoSphere(point, sphereRadius, unprojectionMatrix);
 			points.push(point);
 		}
 		curve = new THREE.CubicBezierCurve3(points[0], points[1], points[2], points[3]);
