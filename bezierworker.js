@@ -6,7 +6,7 @@ var THREE = require('three'),
 	unprojectionMatrix,
 	screenDimensions,
 	mesh,
-	bufferArray;
+	arrayBuffer;
 
 self.addEventListener('message', function(e) {
 	
@@ -23,8 +23,8 @@ self.addEventListener('message', function(e) {
 		
 	} else if (e.data.cmd === 'projectPath') {
 		
-		bufferArray = PATHGEOMETRY.createThetaPhiPathFromXYPath(e.data.path, lineThickness, sphereRadius, unprojectionMatrix, screenDimensions);
-		self.postMessage({'cmd': 'meshReady', 'mesh': bufferArray});
+		arrayBuffer = PATHGEOMETRY.createThetaPhiPathFromXYPath(e.data.path, lineThickness, sphereRadius, unprojectionMatrix, screenDimensions);
+		self.postMessage({'cmd': 'meshReady', 'mesh': arrayBuffer}, [arrayBuffer]);
 		
 	}
 	

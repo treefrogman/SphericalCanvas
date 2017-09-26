@@ -64641,7 +64641,7 @@ function addPathFromScreen(path) {
 }
 
 function tubeGeometryFromArrayBuffer( arrayBuffer ) {
-	var position = new THREE.BufferAttribute( arrayBuffer, 3 ),
+	var position = new THREE.BufferAttribute( new Float32Array(arrayBuffer), 3 ),
 		geometry = new THREE.BufferGeometry();
 	geometry.addAttribute( 'position', position );
 	return geometry;

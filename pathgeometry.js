@@ -25,7 +25,7 @@ function createThetaPhiPathFromXYPath(path, lineThickness, sphereRadius, unproje
 	}
 	tubegeometry = new THREE.TubeGeometry(curvePath, 100, lineThickness, 16, false);
 	tubebuffergeometry = new THREE.BufferGeometry().fromGeometry(tubegeometry);
-	bufferArray = tubebuffergeometry.attributes.position.array;
+	bufferArray = tubebuffergeometry.attributes.position.array.buffer;
 	return bufferArray;
 }
 
