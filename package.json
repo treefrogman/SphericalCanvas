@@ -1,0 +1,26 @@
+{
+  "name": "drawingsphere",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/treefrogman/SphericalCanvas.git"
+  },
+  "author": "Miles Cooley <treefrogman@gmail.com>",
+  "license": "Unlicense",
+  "bugs": {
+    "url": "https://github.com/treefrogman/SphericalCanvas/issues"
+  },
+  "homepage": "https://github.com/treefrogman/SphericalCanvas#readme",
+  "dependencies": {
+    "acorn": "^5.1.2",
+    "paper": "^0.11.4",
+    "three": "^0.87.1",
+    "three-canvas-renderer": "^2.0.0",
+    "three.meshline": "^1.0.3"
+  }
+}
