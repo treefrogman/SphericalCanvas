@@ -1,4 +1,4 @@
-var PAPER = require('paper'),
+var PAPER = require('paper/dist/paper-core'),
 	canvas = document.createElement('canvas'),
 	path,
 	outputCallback,

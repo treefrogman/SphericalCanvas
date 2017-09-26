@@ -41,15 +41,11 @@ function SphereCursor(camera, lineThickness, sphereRadius) {
 		cursor.position.copy(pointOnSphere);
 		cursor.quaternion.setFromUnitVectors(axis, pointOnSphere.normalize());
 		updateCallback();
-		TEXTPRINTING.output([
-			pointOnSphere.x.toFixed(3),
-			pointOnSphere.y.toFixed(3),
-			pointOnSphere.z.toFixed(3)
-		], 2);
-		TEXTPRINTING.output([
-			(sphericalCoords.theta * 180 / Math.PI).toFixed(3),
-			(sphericalCoords.phi * 180 / Math.PI).toFixed(3)
-		], 3);
+		TEXTPRINTING.output( "cursorX: " + pointOnSphere.x.toFixed(3), 2 );
+		TEXTPRINTING.output( "cursorY: " + pointOnSphere.y.toFixed(3), 3 );
+		TEXTPRINTING.output( "cursorZ: " + pointOnSphere.z.toFixed(3), 4 );
+		TEXTPRINTING.output( "cursorTheta: " + ( sphericalCoords.theta * 180 / Math.PI ).toFixed( 3 ), 5 );
+		TEXTPRINTING.output( "cursorPhi: " + ( sphericalCoords.phi * 180 / Math.PI ).toFixed( 3 ), 6 );
 	}
 	this.item = cursor;
 	this.update = update;

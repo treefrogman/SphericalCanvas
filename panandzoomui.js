@@ -30,7 +30,8 @@ function rotateCamera(wDX, wDY) {
 		roty = camera.rotation.y + (wDX / 180 / Math.PI / zoomLevel);
 	camera.rotation.x = Math.max(Math.min(rotx, Math.PI / 2), - Math.PI / 2);
 	camera.rotation.y = roty;
-	TEXTPRINTING.output("rotX: " + rotx, 5);
+	TEXTPRINTING.output("rotX: " + rotx, 7);
+	TEXTPRINTING.output("rotY: " + roty, 8);
 }
 
 exports.registerCamera = function (newcamera) {
