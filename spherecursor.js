@@ -17,7 +17,6 @@ function SphereCursor( camera, lineThickness, sphereRadius ) {
 	cursor = new THREE.LineSegments( edges, material );
 	planarPosition = [ 0, 0 ];
 	hidden = false;
-	updateCallback;
 	axis = new THREE.Vector3( 0, 0, 1 );
 	
 	function moveTo( point ) {
