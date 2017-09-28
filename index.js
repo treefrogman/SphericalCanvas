@@ -1,20 +1,21 @@
-var RENDERSPHERE = require('./rendersphere'),
-	DRAWINGPLANE = require('./drawingplane'),
-	PENLINEEDATA = require('./penlineedata'),
-	KEYRESPONDER = require('./keyresponder'),
-	lineWidth = .2;
+var RENDERSPHERE, DRAWINGPLANE, lineWidth;
+
+RENDERSPHERE = require( './rendersphere' );
+DRAWINGPLANE = require( './drawingplane' );
+
+lineWidth = .2;
 
 // ---------------------------------------------------------------------------------------
-						var TEXTPRINTING = require('./textprinting'),
+						var TEXTPRINTING = require( './textprinting' ),
 							output = TEXTPRINTING.output;
 // ---------------------------------------------------------------------------------------
 
-DRAWINGPLANE.setLineWidth(lineWidth * 15);
+DRAWINGPLANE.setLineWidth( lineWidth * 15 );
 
-DRAWINGPLANE.onStrokeEnd(function (stroke) {
-	RENDERSPHERE.addPathFromScreen(stroke);
-});
+DRAWINGPLANE.onStrokeEnd( function ( stroke ) {
+	RENDERSPHERE.addPathFromScreen( stroke );
+} );
 
-RENDERSPHERE.onStrokeProjected(function () {
+RENDERSPHERE.onStrokeProjected( function () {
 	DRAWINGPLANE.removeOldestPath();
-});
+} );
