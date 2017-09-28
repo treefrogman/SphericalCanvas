@@ -12,7 +12,8 @@ var THREE = require('three'),
 	bezierworker = new Worker('bezierworker.js'),
 	loader = new THREE.JSONLoader(),
 	renderer = new THREE.WebGLRenderer({ antialias: true }),
-	cursor = new SPHERECURSOR.SphereCursor(camera, lineThickness, sphereRadius);
+	cursor = new SPHERECURSOR.SphereCursor(camera, lineThickness, sphereRadius),
+	strokeProjectedCallback;
 
 // ---------------------------------------------------------------------------------------
 						var TEXTPRINTING = require('./textprinting');
@@ -82,6 +83,7 @@ function tubeGeometryFromArrayBuffer( arrayBuffer ) {
 function addTubeMesh(tubegeometry) {
 	tubeMeshObject = new THREE.Mesh(tubegeometry, tubematerial);
 	scene.add(tubeMeshObject);
+	strokeProjectedCallback();
 	cursor.update();
 }
 
@@ -91,3 +93,7 @@ function animate() {
 animate();
 
 exports.addPathFromScreen = addPathFromScreen;
+
+exports.onStrokeProjected = function (callback) {
+	strokeProjectedCallback = callback;
+}

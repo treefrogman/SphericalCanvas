@@ -3,7 +3,8 @@ var PAPER = require('paper/dist/paper-core'),
 	canvas = document.createElement('canvas'),
 	path,
 	outputCallback,
-	lineWidth = .2;
+	lineWidth = .2,
+	pathStack = [];
 
 canvas.setAttribute('resize', 'true');
 document.body.appendChild(canvas);
@@ -25,14 +26,18 @@ PAPER.view.onMouseDrag = function (event) {
 
 PAPER.view.onMouseUp = function (event) {
 	path.simplify();
-	path.remove();
 	if (path.curves.length) {
+		pathStack.push(path);
 		output = path.curves.map(function (item, index) {
 			return item.values;
 		});
 		outputCallback(output);
 	}
 };
+
+exports.removeOldestPath = function () {
+	pathStack.shift().remove();
+}
 
 exports.setLineWidth = function (width) {
 	lineWidth = width;
@@ -57,6 +62,10 @@ DRAWINGPLANE.setLineWidth(lineWidth * 15);
 
 DRAWINGPLANE.onStrokeEnd(function (stroke) {
 	RENDERSPHERE.addPathFromScreen(stroke);
+});
+
+RENDERSPHERE.onStrokeProjected(function () {
+	DRAWINGPLANE.removeOldestPath();
 });
 },{"./drawingplane":1,"./keyresponder":3,"./penlineedata":7,"./rendersphere":8,"./textprinting":11}],3:[function(require,module,exports){
 
@@ -59155,7 +59164,8 @@ var THREE = require('three'),
 	bezierworker = new Worker('bezierworker.js'),
 	loader = new THREE.JSONLoader(),
 	renderer = new THREE.WebGLRenderer({ antialias: true }),
-	cursor = new SPHERECURSOR.SphereCursor(camera, lineThickness, sphereRadius);
+	cursor = new SPHERECURSOR.SphereCursor(camera, lineThickness, sphereRadius),
+	strokeProjectedCallback;
 
 // ---------------------------------------------------------------------------------------
 						var TEXTPRINTING = require('./textprinting');
@@ -59225,6 +59235,7 @@ function tubeGeometryFromArrayBuffer( arrayBuffer ) {
 function addTubeMesh(tubegeometry) {
 	tubeMeshObject = new THREE.Mesh(tubegeometry, tubematerial);
 	scene.add(tubeMeshObject);
+	strokeProjectedCallback();
 	cursor.update();
 }
 
@@ -59234,6 +59245,10 @@ function animate() {
 animate();
 
 exports.addPathFromScreen = addPathFromScreen;
+
+exports.onStrokeProjected = function (callback) {
+	strokeProjectedCallback = callback;
+}
 },{"./panandzoomui":6,"./spherecursor":9,"./spherehelper":10,"./textprinting":11,"three":5}],9:[function(require,module,exports){
 var THREE = require('three'),
 	SPHEREHELPER = require('./spherehelper');

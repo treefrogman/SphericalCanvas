@@ -14,3 +14,7 @@ DRAWINGPLANE.setLineWidth(lineWidth * 15);
 DRAWINGPLANE.onStrokeEnd(function (stroke) {
 	RENDERSPHERE.addPathFromScreen(stroke);
 });
+
+RENDERSPHERE.onStrokeProjected(function () {
+	DRAWINGPLANE.removeOldestPath();
+});

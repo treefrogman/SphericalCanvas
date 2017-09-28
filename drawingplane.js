@@ -2,7 +2,8 @@ var PAPER = require('paper/dist/paper-core'),
 	canvas = document.createElement('canvas'),
 	path,
 	outputCallback,
-	lineWidth = .2;
+	lineWidth = .2,
+	pathStack = [];
 
 canvas.setAttribute('resize', 'true');
 document.body.appendChild(canvas);
@@ -24,14 +25,18 @@ PAPER.view.onMouseDrag = function (event) {
 
 PAPER.view.onMouseUp = function (event) {
 	path.simplify();
-	path.remove();
 	if (path.curves.length) {
+		pathStack.push(path);
 		output = path.curves.map(function (item, index) {
 			return item.values;
 		});
 		outputCallback(output);
 	}
 };
+
+exports.removeOldestPath = function () {
+	pathStack.shift().remove();
+}
 
 exports.setLineWidth = function (width) {
 	lineWidth = width;
