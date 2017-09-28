@@ -1,47 +1,51 @@
-var camera, zoomLevel, viewChangeCallback;
+var camera, zoomRange, zoomLevel, rotationXRange, rotationX, rotationY,
+	viewChangeCallback;
 
+zoomRange = [ 1, 9 ];
 zoomLevel = 4;
+rotationXRange = [ Math.PI / 2, - Math.PI / 2 ];
+rotationX = 0;
+rotationY = 0;
 
 // ---------------------------------------------------------------------------------------
 						var TEXTPRINTING = require( './textprinting' );
 // ---------------------------------------------------------------------------------------
 
-window.addEventListener( 'mousewheel', function () {
-	var wDY;
-	
-	wDY = event.wheelDeltaY;
-	
-	if ( Math.abs( wDY ) === 120 && event.deltaY * -3 !== wDY ) {
-		event.preventDefault();
-		zoomCamera( wDY / 120 );
-	} else {
-		rotateCamera( event.wheelDeltaX, event.wheelDeltaY );
-	}
-	camera.updateMatrixWorld();
-	viewChangeCallback();
-}, false );
-
-function zoomCamera( zoomAmt ) {
-	var zoom;
-	
-	zoom = zoomLevel + zoomAmt / 6;
-	zoomLevel = Math.min( Math.max( zoom, 1 ), 9 );
-	camera.fov = 100 - 9 * zoomLevel;
-	camera.updateProjectionMatrix();
+function zoomView( zoomAmt ) {
+	setZoom(zoomLevel + zoomAmt);
 }
 
-function rotateCamera( wDX, wDY ) {
-	var rotx, roty;
+function setZoom(zoom) {
+	zoomLevel = Math.min( Math.max( zoom, zoomRange[ 0 ] ), zoomRange[ 1 ] );
 	
-	rotx = camera.rotation.x + ( wDY / 180 / Math.PI / zoomLevel );
-	rotx = Math.max( Math.min( rotx, Math.PI / 2 ), - Math.PI / 2 );
-	roty = camera.rotation.y + ( wDX / 180 / Math.PI / zoomLevel );
+	camera.fov = 100 - 9 * zoomLevel;
+	TEXTPRINTING.output( "zoom: " + zoomLevel, 9 );
 	
-	camera.rotation.x = rotx;
-	camera.rotation.y = roty;
+	updateView();
+}
+
+function panView( wDX, wDY ) {
+	setRotation(
+		camera.rotation.x + ( wDY / 180 / Math.PI / zoomLevel ),
+		camera.rotation.y + ( wDX / 180 / Math.PI / zoomLevel )
+	);
+}
+
+function setRotation( rotx, roty ) {
+	rotx = Math.max( Math.min( rotx, rotationXRange[ 0 ] ), rotationXRange[ 1 ] );
 	
-	TEXTPRINTING.output( "rotX: " + rotx, 7 );
-	TEXTPRINTING.output( "rotY: " + roty, 8 );
+	camera.rotation.x = rotationX = rotx;
+	camera.rotation.y = rotationY = roty;
+	
+	TEXTPRINTING.output( "rotX: " + rotationX, 7 );
+	TEXTPRINTING.output( "rotY: " + rotationY, 8 );
+	updateView();
+}
+
+function updateView() {
+	camera.updateMatrixWorld();
+	camera.updateProjectionMatrix();
+	viewChangeCallback();
 }
 
 exports.registerCamera = function ( newcamera ) {
